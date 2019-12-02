@@ -9,7 +9,6 @@
 #include "settings.h"
 
 #define WIFI_TIMEOUT (60 * 1000)
-#define WATCHDOG_TIMEOUT (10 * 1000)
 #define LOOP_DELAY (1 * 1000)
 #define SERIAL_BAUD 9600
 #define MQTT_SEND_TIMEOUT (1 * 60 * 1000)
@@ -45,7 +44,6 @@ void errorLeds(void)
 
 void connectMqtt()
 {
-  delay(4000);
   if (!mqttClient.connected())
   {
     Serial.print(F("MQTT: Csatlakozás: "));
@@ -89,6 +87,7 @@ void checkWiFi()
     {
       Serial.print(F("WiFi: Csatlakozva, IP cím: "));
       Serial.println(WiFi.localIP());
+      delay(1000);
       connectMqtt();
       connected = true;
     }
@@ -213,9 +212,8 @@ void setupBME680()
       BSEC_OUTPUT_CO2_EQUIVALENT,
       BSEC_OUTPUT_COMPENSATED_GAS,
       BSEC_OUTPUT_GAS_PERCENTAGE,
-      BSEC_OUTPUT_STABILIZATION_STATUS,
-      BSEC_OUTPUT_STATIC_IAQ
-
+      BSEC_OUTPUT_STATIC_IAQ,
+      BSEC_OUTPUT_STABILIZATION_STATUS
   };
 
   iaqSensor.updateSubscription(sensorList, 13, BSEC_SAMPLE_RATE_LP);
@@ -270,7 +268,6 @@ void setup(void)
   delay(100);
   
   mqttClient.setServer(mqtt_server, mqtt_port);
-  delay(100);
 
   wifiStartTime = millis();
   mqttSendTime = millis();
